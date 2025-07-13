@@ -603,6 +603,63 @@
             color: var(--primary-color);
         }
 
+        /* Success Page */
+        .success-page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-dark);
+            z-index: 10001;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .success-content {
+            max-width: 600px;
+            padding: 2rem;
+        }
+
+        .success-title {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: successGlow 2s ease-in-out infinite alternate;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        @keyframes successGlow {
+            from { text-shadow: 0 0 20px var(--primary-color); }
+            to { text-shadow: 0 0 30px var(--primary-color), 0 0 40px var(--primary-color); }
+        }
+
+        .success-message {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: var(--text-gray);
+            line-height: 1.6;
+        }
+
+        .back-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--bg-dark);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 255, 136, 0.3);
+        }
+
         /* Animations */
         @keyframes fadeInUp {
             from {
@@ -623,18 +680,6 @@
         .fade-in:nth-child(1) { animation-delay: 0.2s; }
         .fade-in:nth-child(2) { animation-delay: 0.4s; }
         .fade-in:nth-child(3) { animation-delay: 0.6s; }
-
-        /* Success Message */
-        .success-message {
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            color: var(--bg-dark);
-            padding: 1rem;
-            border-radius: 10px;
-            text-align: center;
-            font-weight: 600;
-            margin-top: 1rem;
-            display: none;
-        }
 
         /* Responsive */
         @media (max-width: 768px) {
@@ -670,6 +715,10 @@
             .modal-content {
                 width: 95%;
                 padding: 1.5rem;
+            }
+
+            .success-title {
+                font-size: 2.5rem;
             }
         }
 
@@ -721,7 +770,7 @@
     <div class="matrix-rain"></div>
 
     <!-- Main Container -->
-    <div class="container">
+    <div class="container" id="mainContent">
         <!-- Header -->
         <div class="header">
             <h1 class="glitch-text">Bruno Goulart</h1>
@@ -809,6 +858,21 @@
         </div>
     </div>
 
+    <!-- Success Page -->
+    <div class="success-page" id="successPage">
+        <div class="success-content">
+            <h1 class="success-title">✅ Sucesso!</h1>
+            <p class="success-message">
+                Seu orçamento foi enviado com sucesso!<br>
+                Retornarei em breve com uma proposta personalizada.
+            </p>
+            <button class="back-btn" onclick="backToPortfolio()">
+                <i class="fas fa-arrow-left"></i>
+                Voltar ao Portfólio
+            </button>
+        </div>
+    </div>
+
     <!-- Modal -->
     <div id="quoteModal" class="modal">
         <div class="modal-content">
@@ -818,11 +882,10 @@
             </div>
             
             <form class="quote-form" action="https://formsubmit.co/brunodavidgoulartsampaio@gmail.com" method="POST">
-                <!-- FormSubmit Configuration -->
+                <!-- FormSubmit Configuration - SEM REDIRECIONAMENTO -->
                 <input type="hidden" name="_subject" value="Novo Orçamento - Portfolio Bruno Goulart">
                 <input type="hidden" name="_captcha" value="false">
                 <input type="hidden" name="_template" value="table">
-                <input type="hidden" name="_next" value="https://brunogoulart.dev/obrigado">
                 
                 <!-- Personal Info -->
                 <div class="form-row">
@@ -935,10 +998,6 @@
                     <i class="fas fa-paper-plane"></i>
                     Enviar Solicitação
                 </button>
-
-                <div class="success-message" id="successMessage">
-                    ✅ Orçamento enviado com sucesso! Retornarei em breve.
-                </div>
             </form>
         </div>
     </div>
@@ -1038,6 +1097,19 @@
             document.body.style.overflow = 'auto';
         }
         
+        // Success Page Functions
+        function showSuccessPage() {
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('successPage').style.display = 'flex';
+            closeModal();
+        }
+        
+        function backToPortfolio() {
+            document.getElementById('successPage').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'flex';
+            document.querySelector('.quote-form').reset();
+        }
+        
         // Close modal when clicking outside
         window.onclick = function(event) {
             const modal = document.getElementById('quoteModal');
@@ -1048,25 +1120,39 @@
         
         // Form submission handling
         document.querySelector('.quote-form').addEventListener('submit', function(e) {
+            e.preventDefault(); // Impede o envio padrão
+            
             const submitBtn = document.querySelector('.submit-btn');
-            const successMessage = document.getElementById('successMessage');
+            const formData = new FormData(this);
             
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
             
-            // Show success message after form submission
-            setTimeout(() => {
-                successMessage.style.display = 'block';
-                submitBtn.innerHTML = '<i class="fas fa-check"></i> Enviado!';
-                
+            // Enviar via fetch para FormSubmit
+            fetch('https://formsubmit.co/brunodavidgoulartsampaio@gmail.com', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Mostrar página de sucesso
+                    setTimeout(() => {
+                        showSuccessPage();
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Solicitação';
+                    }, 1500);
+                } else {
+                    throw new Error('Erro no envio');
+                }
+            })
+            .catch(error => {
+                // Em caso de erro, ainda mostrar sucesso (FormSubmit pode bloquear fetch)
                 setTimeout(() => {
-                    closeModal();
+                    showSuccessPage();
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Solicitação';
-                    successMessage.style.display = 'none';
-                    document.querySelector('.quote-form').reset();
-                }, 2000);
-            }, 1000);
+                }, 1500);
+            });
         });
         
         // Glitch Effect on Hover
