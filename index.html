@@ -469,7 +469,6 @@
         }
 
         .form-input,
-        .form-select,
         .form-textarea {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(0, 255, 136, 0.3);
@@ -482,7 +481,6 @@
         }
 
         .form-input:focus,
-        .form-select:focus,
         .form-textarea:focus {
             outline: none;
             border-color: var(--primary-color);
@@ -849,43 +847,15 @@
                     </div>
                 </div>
 
-                <!-- Project Details -->
+                <!-- Project Info Simplified -->
                 <div class="form-group">
-                    <label class="form-label">Tipo de Projeto *</label>
-                    <select name="tipo_projeto" class="form-select" required>
-                        <option value="">Selecione o tipo</option>
-                        <option value="website">Website Institucional</option>
-                        <option value="ecommerce">E-commerce</option>
-                        <option value="webapp">Aplicação Web</option>
-                        <option value="mobile">App Mobile</option>
-                        <option value="sistema">Sistema Personalizado</option>
-                        <option value="api">API/Backend</option>
-                        <option value="outro">Outro</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Orçamento Estimado</label>
-                    <select name="orcamento" class="form-select">
-                        <option value="">Selecione uma faixa</option>
-                        <option value="ate-5k">Até R$ 5.000</option>
-                        <option value="5k-15k">R$ 5.000 - R$ 15.000</option>
-                        <option value="15k-30k">R$ 15.000 - R$ 30.000</option>
-                        <option value="30k-50k">R$ 30.000 - R$ 50.000</option>
-                        <option value="acima-50k">Acima de R$ 50.000</option>
-                    </select>
+                    <label class="form-label">Tipo de Projeto e Orçamento Estimado</label>
+                    <input type="text" name="projeto_orcamento" class="form-input" placeholder="Ex: E-commerce, orçamento até R$ 15.000">
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Prazo Desejado</label>
-                    <select name="prazo" class="form-select">
-                        <option value="">Selecione o prazo</option>
-                        <option value="urgente">Urgente (até 2 semanas)</option>
-                        <option value="1mes">1 mês</option>
-                        <option value="2meses">2 meses</option>
-                        <option value="3meses">3 meses</option>
-                        <option value="flexivel">Flexível</option>
-                    </select>
+                    <input type="text" name="prazo" class="form-input" placeholder="Ex: 2 meses, urgente, flexível">
                 </div>
 
                 <!-- Technologies -->
